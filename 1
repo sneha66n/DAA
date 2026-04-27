@@ -1,0 +1,131 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// BASE CLASS
+class Person {
+protected:
+    int id;
+    string name;
+
+public:
+    Person() {
+        id = 0;
+        name = "Unknown";
+    }
+
+    Person(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    // Virtual function (for polymorphism)
+    virtual void display() {
+        cout << "ID: " << id << "\nName: " << name << endl;
+    }
+};
+
+// DERIVED CLASS
+class Student : public Person {
+private:
+    float marks;
+
+public:
+    // Default constructor
+    Student() : Person() {
+        marks = 0;
+    }
+
+    // Parameterized constructor
+    Student(int i, string n, float m) : Person(i, n) {
+        marks = m;
+    }
+
+    // Function Overloading
+    void setData(int i, string n) {
+        id = i;
+        name = n;
+        marks = 0;
+    }
+
+    void setData(int i, string n, float m) {
+        id = i;
+        name = n;
+        marks = m;
+    }
+
+    // Function Overriding
+    void display() override {
+        cout << "ID: " << id << "\nName: " << name 
+             << "\nMarks: " << marks << endl;
+    }
+
+    float getMarks() {
+        return marks;
+    }
+
+    string toFileString() {
+        return to_string(id) + " " + name + " " + to_string(marks);
+    }
+};
+
+// FILE WRITE
+void writeToFile(vector<Student> &students) {
+    ofstream file("students.txt");
+    for (auto s : students) {
+        file << s.toFileString() << endl;
+    }
+    file.close();
+}
+
+// FILE READ
+void readFromFile() {
+    ifstream file("students.txt");
+    string line;
+    cout << "\nReading from file:\n";
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+    file.close();
+}
+
+// FILE COPY
+void copyFile() {
+    ifstream src("students.txt");
+    ofstream dest("copy.txt");
+
+    string line;
+    while (getline(src, line)) {
+        dest << line << endl;
+    }
+
+    src.close();
+    dest.close();
+}
+
+int main() {
+    vector<Student> students;
+
+    // Adding students
+    students.push_back(Student(1, "Om", 89));
+    students.push_back(Student(2, "Sneha", 95));
+    students.push_back(Student(3, "Rahul", 76));
+
+    // Polymorphism using base pointer
+    cout << "\nDisplaying Students:\n";
+    for (int i = 0; i < students.size(); i++) {
+        Person* p = &students[i];
+        p->display();   // runtime polymorphism
+        cout << "------\n";
+    }
+
+    // File operations
+    writeToFile(students);
+    readFromFile();
+    copyFile();
+
+    cout << "\nFile copied successfully to copy.txt\n";
+
+    return 0;
+}
