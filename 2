@@ -1,0 +1,946 @@
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <fstream>
+using namespace std;
+
+class student{
+	private:
+	int roll;
+	string name;
+	float marks;
+
+	public:
+	void set_data(int r, string n, float m){
+		roll = r;
+		name = n;
+		marks = m;
+	}
+	
+	void display(){
+		cout << "Roll No: " << roll << " Name: " << name << " Marks: " << marks << endl;
+	}
+
+	void write_data(ofstream &outfile){
+		outfile << roll << " " << name << " " << marks << " " << endl;
+	}
+};
+
+
+int main(){
+	student s[50];
+	int count = 0;
+
+	ifstream infile("student.txt");
+	
+	if(!infile){
+		cout << "File does not exist!" << endl;
+	}
+
+	int roll;
+	string name;
+	float marks;
+
+	while(infile >> roll >> name >> marks && count < 50){
+	    s[count].set_data(roll, name, marks);
+	}
+
+	infile.close();
+
+	for(int i = 0; i < count; i++){
+		s[i].display();
+	}
+
+	ofstream outfile("Student_output.txt");
+	for(int i = 0; i < count; i++){
+		s[i].write_data(outfile);
+	}
+
+	outfile.close();
+
+	char choice;
+	cout << "Do you wish to add a record?" << endl;
+	cin >> choice;
+
+	if(choice == 'y' || choice == 'Y'){
+		cout << "Enter roll, name and marks: ";
+		cin >> roll >> name >> marks;
+		s[count].set_data(roll, name, marks);
+
+		ofstream outfile("student_output.txt", ios::app);
+		s[count].write_data(outfile);
+		outfile.close();
+
+		cout << "record added successfully\n" << endl;
+	}
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int main(){
+	int n;
+	cout << "How many students" << endl;
+	cin >> n;
+
+	vector<int> grades;
+
+	for(int i = 0; i < n; i++){
+		int g;
+		cin >> g;
+		grades.push_back(g);
+	}
+
+	int sum = 0;
+	for(vector<int>::iterator it = grades.begin(); it!=grades.end(); it++){
+		sum += *it;
+	}
+
+	double avg = (double)sum/grades.size();
+
+	int min_val = *grades.begin();
+	int max_val = *grades.begin();
+
+	for(vector<int>::iterator it = grades.begin(); it!=grades.end(); it++){
+		if(*it < min_val) min_val = *it;
+		if(*it > max_val) max_val = *it;
+	}
+
+	cout << "\nAverage marks: " << avg;
+	cout << "\nMax marks: " << max_val;
+	cout << "\nMin marks: " << min_val;
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+#include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+class Employee {
+protected:
+    int id;
+    string name;
+    float basic;
+
+public:
+    Employee() {
+        id = 0;
+        name = "";
+        basic = 0;
+    }
+
+    Employee(int i, string n, float b) {
+        id = i;
+        name = n;
+        basic = b;
+    }
+
+    virtual float calculateSalary() {
+        return basic;
+    }
+
+    virtual void display() {
+        cout << "ID: " << id << " Name: " << name << " Salary: " << calculateSalary() << endl;
+    }
+
+    virtual void write(ofstream &ofile) {
+        ofile << id << " " << name << " " << basic << endl;
+    }
+
+    virtual ~Employee() {}
+};
+
+class Manager : public Employee {
+    float allowance;
+
+public:
+    Manager(int i, string n, float b, float a) : Employee(i, n, b) {
+        allowance = a;
+    }
+
+    float calculateSalary() {
+        return basic + allowance;
+    }
+
+    void display() {
+        cout << "ID: " << id << " Name: " << name
+             << " Total Salary: " << calculateSalary() << endl;
+    }
+
+    void write(ofstream &ofile) {
+        ofile << id << " " << name << " " << basic << " " << allowance << endl;
+    }
+};
+
+int main() {
+    vector<Employee*> emp;
+    int n;
+
+    cout << "Enter number of employees: ";
+    cin >> n;
+
+    for(int i = 0; i < n; i++) {
+        int id;
+        string name;
+        float basic, allowance;
+
+        cout << "Enter ID, Name, Basic Salary and Allowance: ";
+        cin >> id >> name >> basic >> allowance;
+
+        try {
+            if(basic < 0) throw "Invalid salary";
+
+            emp.push_back(new Manager(id, name, basic, allowance));
+        }
+        catch(const char* msg) {
+            cout << msg << endl;
+        }
+    }
+
+    cout << "\nEmployee Details:\n";
+    for(auto it = emp.begin(); it != emp.end(); it++) {
+        (*it)->display();
+    }
+
+    float total = 0;
+    for(auto it = emp.begin(); it != emp.end(); it++) {
+        total += (*it)->calculateSalary();
+    }
+
+    cout << "\nTotal Salary: " << total << endl;
+
+    ofstream ofile("salary.txt");
+    for(auto it = emp.begin(); it != emp.end(); it++) {
+        (*it)->write(ofile);
+    }
+    ofile.close();
+
+    for(auto it = emp.begin(); it != emp.end(); it++) {
+        delete *it;
+    }
+
+    return 0;
+}
+------------------------------------------------------------------------------------------------------------------------------------------
+
+#include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+class books {
+private:
+    int id;
+    string title;
+    float price;
+
+public:
+    books() {
+        id = 0;
+        title = "";
+        price = 0;
+    }
+
+    books(int i, string t, float p) {
+        id = i;
+        title = t;
+        price = p;
+    }
+
+    float getprice() {
+        return price;
+    }
+
+    void accept() {
+        cout << "Enter ID, Title and Price: ";
+        cin >> id >> title >> price;
+    }
+
+    void display() {
+        cout << "ID: " << id << " Title: " << title << " Price: " << price << endl;
+    }
+
+    void write(ofstream &ofile) {
+        ofile << id << " " << title << " " << price << endl;
+    }
+};
+
+int main() {
+    vector<books> b;
+    int id;
+    string title;
+    float price;
+
+    ifstream ifile("log.txt");
+    if (ifile) {
+        while (ifile >> id >> title >> price) {
+            b.push_back(books(id, title, price));
+        }
+        ifile.close();
+    }
+
+    int n;
+    cout << "Enter number of books to add: ";
+    cin >> n;
+
+    ofstream ofile("log.txt", ios::app);
+
+    for (int i = 0; i < n; i++) {
+        books temp;
+        temp.accept();
+        b.push_back(temp);
+        temp.write(ofile);
+    }
+
+    ofile.close();
+
+    cout << "\nBooks:\n";
+    for (auto it = b.begin(); it != b.end(); it++) {
+        it->display();
+    }
+
+    float total = 0;
+    for (auto it = b.begin(); it != b.end(); it++) {
+        total += it->getprice();
+    }
+
+    cout << "\nTotal price: " << total << endl;
+
+    char choice;
+    cout << "\nDo you want to add more books? (y/n): ";
+    cin >> choice;
+
+    while (choice == 'y' || choice == 'Y') {
+        books temp;
+        temp.accept();
+        b.push_back(temp);
+
+        ofstream ofile("log.txt", ios::app);
+        temp.write(ofile);
+        ofile.close();
+
+        cout << "Add more? (y/n): ";
+        cin >> choice;
+    }
+
+    total = 0;
+    for (auto it = b.begin(); it != b.end(); it++) {
+        total += it->getprice();
+    }
+
+    cout << "\nUpdated total price: " << total << endl;
+
+    return 0;
+}
+[4/27, 8:54 AM] Mansi Gunjal MIT: OOP PS
+
+1. "Calculate and display marks of students for multiple subjects"
+2. "1.Calculate total salary of employees using their basic pay and allowances.(And in any chit you get you will have to add inheritance, polymorphism(both run time and compile time), virtual binding, exceptional handling, create constructors and deconstructors, file handling- you will be given marks on basis of these points)"
+3. ⁠create an ATM simulation that provides balance enquiry, deposit and withdrawal functions
+[4/27, 8:54 AM] Mansi Gunjal MIT: OOP PS
+
+1. "Calculate and display marks of students for multiple subjects"
+2. "1.Calculate total salary of employees using their basic pay and allowances.(And in any chit you get you will have to add inheritance, polymorphism(both run time and compile time), virtual binding, exceptional handling, create constructors and deconstructors, file handling- you will be given marks on basis of these points)"
+3. ⁠create an ATM simulation that provides balance enquiry, deposit and withdrawal functions
+4. Make a library management system with 1 Abstract class (with 2 functions, 1 for calculating late fine and the other for Display). Then derive those functions for Books (another class) with 0.5$ fine per day, and Media 2$ per day fine. Then make another class Booker which holds data of the customers. Then make another class named Transaction which will connect the libraryItem class and booker class into one single object. Finally make the LibraryManager class that will generate a report and calculate the total fine for the customer.
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// ABSTRACT CLASS
+class Person {
+protected:
+    int id;
+    string name;
+
+public:
+    Person(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    virtual void calculate() = 0;
+    virtual void display() = 0;
+
+    virtual ~Person() {
+        cout << "Person Destructor\n";
+    }
+};
+
+// DERIVED CLASS
+class Student : public Person {
+private:
+    int maths, science, english;
+    int total;
+
+public:
+    // Constructor
+    Student(int i, string n, int m, int s, int e) : Person(i, n) {
+        maths = m;
+        science = s;
+        english = e;
+        total = 0;
+    }
+
+    // Overloading
+    void setData(int i) {
+        id = i;
+    }
+
+    void setData(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    // Calculate total
+    void calculate() {
+        total = maths + science + english;
+        cout << "Total Marks: " << total << endl;
+    }
+
+    // Display
+    void display() {
+        cout << "ID: " << id << ", Name: " << name << endl;
+        cout << "Maths: " << maths << ", Science: " << science << ", English: " << english << endl;
+    }
+
+    ~Student() {
+        cout << "Student Destructor\n";
+    }
+};
+
+int main() {
+    vector<Person*> v;
+
+    int n;
+    cout << "Enter number of students: ";
+    cin >> n;
+
+    // INPUT
+    for (int i = 0; i < n; i++) {
+        int id, m, s, e;
+        string name;
+
+        cout << "\nEnter id and name: ";
+        cin >> id >> name;
+
+        cout << "Enter marks (Maths Science English): ";
+        cin >> m >> s >> e;
+
+        try {
+            if (m < 0 || s < 0 || e < 0)
+                throw 1;
+
+            v.push_back(new Student(id, name, m, s, e));
+        }
+        catch (...) {
+            cout << "Invalid marks! Try again.\n";
+            i--;
+        }
+    }
+
+    // DISPLAY
+    cout << "\nStudent Data:\n";
+    for (int i = 0; i < v.size(); i++) {
+        v[i]->display();
+        v[i]->calculate();
+    }
+
+    // SIMPLE FILE HANDLING
+    ofstream fout("data.txt");
+    fout << "Student data stored\n";
+    fout.close();
+
+    ifstream fin("data.txt");
+    string line;
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+
+    // DELETE MEMORY
+    for (int i = 0; i < v.size(); i++) {
+        delete v[i];
+    }
+
+    return 0;
+}
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// ABSTRACT CLASS
+class Person {
+protected:
+    int id;
+    string name;
+
+public:
+    Person(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    virtual void calculate() = 0;
+    virtual void display() = 0;
+
+    virtual ~Person() {
+        cout << "Person Destructor\n";
+    }
+};
+
+// DERIVED CLASS
+class Employee : public Person {
+private:
+    float basic, allowance, total;
+
+public:
+    // Constructor
+    Employee(int i, string n, float b, float a) : Person(i, n) {
+        basic = b;
+        allowance = a;
+        total = 0;
+    }
+
+    // Overloading
+    void setData(int i) {
+        id = i;
+    }
+
+    void setData(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    // Calculate total salary
+    void calculate() {
+        total = basic + allowance;
+        cout << "Total Salary: " << total << endl;
+    }
+
+    // Display
+    void display() {
+        cout << "ID: " << id << ", Name: " << name << endl;
+        cout << "Basic: " << basic << ", Allowance: " << allowance << endl;
+    }
+
+    ~Employee() {
+        cout << "Employee Destructor\n";
+    }
+};
+
+int main() {
+    vector<Person*> v;
+
+    int n;
+    cout << "Enter number of employees: ";
+    cin >> n;
+
+    // INPUT
+    for (int i = 0; i < n; i++) {
+        int id;
+        string name;
+        float basic, allowance;
+
+        cout << "\nEnter id and name: ";
+        cin >> id >> name;
+
+        cout << "Enter basic salary and allowance: ";
+        cin >> basic >> allowance;
+
+        try {
+            if (basic < 0 || allowance < 0)
+                throw 1;
+
+            v.push_back(new Employee(id, name, basic, allowance));
+        }
+        catch (...) {
+            cout << "Invalid input! Try again.\n";
+            i--;
+        }
+    }
+
+    // DISPLAY
+    cout << "\nEmployee Data:\n";
+    for (int i = 0; i < v.size(); i++) {
+        v[i]->display();
+        v[i]->calculate();
+    }
+
+    // SIMPLE FILE HANDLING
+    ofstream fout("data.txt");
+    fout << "Employee data stored\n";
+    fout.close();
+
+    ifstream fin("data.txt");
+    string line;
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+
+    // DELETE MEMORY
+    for (int i = 0; i < v.size(); i++) {
+        delete v[i];
+    }
+
+    return 0;
+}
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// ABSTRACT CLASS
+class Account {
+protected:
+    int accNo;
+    string name;
+
+public:
+    Account(int a, string n) {
+        accNo = a;
+        name = n;
+    }
+
+    virtual void calculate() = 0;   // for operations
+    virtual void display() = 0;
+
+    virtual ~Account() {
+        cout << "Account Destructor\n";
+    }
+};
+
+// DERIVED CLASS
+class ATM : public Account {
+private:
+    float balance;
+
+public:
+    // Constructor
+    ATM(int a, string n, float b) : Account(a, n) {
+        balance = b;
+    }
+
+    // Overloading (compile-time polymorphism)
+    void deposit(float amt) {
+        balance += amt;
+    }
+
+    void deposit(float amt, int bonus) {
+        balance += amt + bonus;
+    }
+
+    // Withdraw
+    void withdraw(float amt) {
+        if (amt > balance)
+            cout << "Insufficient balance\n";
+        else
+            balance -= amt;
+    }
+
+    // Runtime polymorphism
+    void calculate() {
+        cout << "Current Balance: " << balance << endl;
+    }
+
+    void display() {
+        cout << "Account No: " << accNo << ", Name: " << name << endl;
+    }
+
+    ~ATM() {
+        cout << "ATM Destructor\n";
+    }
+};
+
+int main() {
+    vector<Account*> v;
+
+    int n;
+    cout << "Enter number of accounts: ";
+    cin >> n;
+
+    // INPUT
+    for (int i = 0; i < n; i++) {
+        int accNo;
+        string name;
+        float balance;
+
+        cout << "\nEnter account no and name: ";
+        cin >> accNo >> name;
+
+        cout << "Enter initial balance: ";
+        cin >> balance;
+
+        try {
+            if (balance < 0)
+                throw 1;
+
+            v.push_back(new ATM(accNo, name, balance));
+        }
+        catch (...) {
+            cout << "Invalid balance! Try again.\n";
+            i--;
+        }
+    }
+
+    // OPERATIONS
+    int choice;
+    do {
+        cout << "\n1. Display\n2. Deposit\n3. Withdraw\n4. Exit\nEnter choice: ";
+        cin >> choice;
+
+        for (int i = 0; i < v.size(); i++) {
+            ATM* a = (ATM*)v[i];   // simple cast
+
+            if (choice == 1) {
+                a->display();
+                a->calculate();
+            }
+            else if (choice == 2) {
+                float amt;
+                cout << "Enter deposit amount: ";
+                cin >> amt;
+                a->deposit(amt);
+            }
+            else if (choice == 3) {
+                float amt;
+                cout << "Enter withdraw amount: ";
+                cin >> amt;
+                a->withdraw(amt);
+            }
+        }
+
+    } while (choice != 4);
+
+    // SIMPLE FILE HANDLING
+    ofstream fout("data.txt");
+    fout << "ATM operations completed\n";
+    fout.close();
+
+    ifstream fin("data.txt");
+    string line;
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+
+    // DELETE MEMORY
+    for (int i = 0; i < v.size(); i++) {
+        delete v[i];
+    }
+
+    return 0;
+}
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// ABSTRACT CLASS
+class LibraryItem {
+public:
+    virtual float calculateFine(int days) = 0;
+    virtual void display() = 0;
+    virtual ~LibraryItem() {}
+};
+
+// BOOK CLASS
+class Book : public LibraryItem {
+private:
+    string title;
+
+public:
+    Book(string t) {
+        title = t;
+    }
+
+    float calculateFine(int days) {
+        return days * 0.5;   // 0.5$ per day
+    }
+
+    void display() {
+        cout << "Book: " << title << endl;
+    }
+};
+
+// MEDIA CLASS
+class Media : public LibraryItem {
+private:
+    string title;
+
+public:
+    Media(string t) {
+        title = t;
+    }
+
+    float calculateFine(int days) {
+        return days * 2;   // 2$ per day
+    }
+
+    void display() {
+        cout << "Media: " << title << endl;
+    }
+};
+
+// BOOKER CLASS (Customer)
+class Booker {
+private:
+    int id;
+    string name;
+
+public:
+    Booker(int i, string n) {
+        id = i;
+        name = n;
+    }
+
+    void display() {
+        cout << "Customer ID: " << id << ", Name: " << name << endl;
+    }
+};
+
+// TRANSACTION CLASS (connects item + customer)
+class Transaction {
+private:
+    LibraryItem* item;
+    Booker* user;
+    int days;
+
+public:
+    Transaction(LibraryItem* i, Booker* u, int d) {
+        item = i;
+        user = u;
+        days = d;
+    }
+
+    float getFine() {
+        return item->calculateFine(days);
+    }
+
+    void display() {
+        user->display();
+        item->display();
+        cout << "Days late: " << days << endl;
+        cout << "Fine: " << getFine() << endl;
+    }
+};
+
+// LIBRARY MANAGER CLASS
+class LibraryManager {
+private:
+    vector<Transaction*> tlist;
+
+public:
+    void addTransaction(Transaction* t) {
+        tlist.push_back(t);
+    }
+
+    void generateReport() {
+        float total = 0;
+        cout << "\n--- Library Report ---\n";
+
+        for (int i = 0; i < tlist.size(); i++) {
+            tlist[i]->display();
+            total += tlist[i]->getFine();
+            cout << "------------------\n";
+        }
+
+        cout << "Total Fine: " << total << endl;
+    }
+};
+
+int main() {
+    LibraryManager manager;
+
+    int n;
+    cout << "Enter number of transactions: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        int id, days, type;
+        string name, title;
+
+        cout << "\nEnter customer id and name: ";
+        cin >> id >> name;
+
+        Booker* b = new Booker(id, name);
+
+        cout << "Enter item type (1=Book, 2=Media): ";
+        cin >> type;
+
+        cout << "Enter title: ";
+        cin >> title;
+
+        cout << "Enter late days: ";
+        cin >> days;
+
+        LibraryItem* item;
+
+        if (type == 1)
+            item = new Book(title);
+        else
+            item = new Media(title);
+
+        try {
+            if (days < 0)
+                throw 1;
+
+            Transaction* t = new Transaction(item, b, days);
+            manager.addTransaction(t);
+        }
+        catch (...) {
+            cout << "Invalid days! Try again.\n";
+            i--;
+        }
+    }
+
+    manager.generateReport();
+
+    // SIMPLE FILE HANDLING
+    ofstream fout("data.txt");
+    fout << "Library report generated\n";
+    fout.close();
+
+    ifstream fin("data.txt");
+    string line;
+    while (getline(fin, line)) {
+        cout << line << endl;
+    }
+    fin.close();
+
+    return 0;
+}
+[4/27, 8:54 AM] Mansi Gunjal MIT: #include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// BASE CLASS
+class Device {
+protected:
+    string brand, model;
+
+public:
+    Device(string b, string m) {
+        brand = b;
+        model = m;
+    }
+
+    virtual void display() {
+        cout << "Brand: " << brand << ", Model: " << model << endl;
+    }
+
+    virtual ~Device() {
+        cout << "Device Destructor\n";
+    }
+};
+
+// DERIVED CLASS
+class Mobile : public De
